@@ -7,3 +7,4 @@ langchain-text-splitters==1.1.2
 qdrant-client==1.18.0
 pypdf==6.14.2
 docx2txt==0.9 
+tavily-python==0.7.27
