@@ -11,6 +11,7 @@ class AgentState(TypedDict):
     sql_result: Optional[str]      # data(SQL) agent natijasi
     code_result: Optional[str]     # code agent natijasi
     answer: str                    # yakuniy javob
+    approved: bool                 # critic hozirgi javobni tasdiqladimi
     steps: List[str]               # qaysi agentlar ishga tushgani (trace uchun)
     revisions: int                 # critic necha marta qaytarganini sanaydi
 
@@ -24,6 +25,7 @@ def new_state(question: str) -> AgentState:
         sql_result=None,
         code_result=None,
         answer="",
+        approved=False,
         steps=[],
         revisions=0,
     )
