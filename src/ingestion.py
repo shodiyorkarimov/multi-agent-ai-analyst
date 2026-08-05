@@ -12,11 +12,23 @@ from langchain_qdrant import QdrantVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
 
+from qdrant_client import QdrantClient
+
 from src.config import settings  # noqa: F401  (import triggers load_dotenv)
 
 DOCS_DIR = Path(__file__).resolve().parent.parent / "data" / "docs"
 QDRANT_PATH = str(Path(__file__).resolve().parent.parent / "data" / "qdrant_storage")
 COLLECTION_NAME = "company_docs"
+
+_qdrant_client: QdrantClient | None = None
+
+
+def get_qdrant_client() -> QdrantClient:
+    """Butun loyiha bo'ylab bitta umumiy Qdrant clientini qaytaradi (lokal rejim faqat bitta clientga ruxsat beradi)."""
+    global _qdrant_client
+    if _qdrant_client is None:
+        _qdrant_client = QdrantClient(path=QDRANT_PATH)
+    return _qdrant_client
 
 # Katta PDF fayllarda tezkor sinov qilish uchun: masalan 20 ga o'zgartiring
 # (faqat birinchi 20 sahifa o'qiladi). To'liq kitobni ishlatish uchun None qoldiring.

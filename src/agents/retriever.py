@@ -6,7 +6,7 @@ from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 
 from src.config import settings  # noqa: F401  (import triggers load_dotenv)
-from src.ingestion import COLLECTION_NAME, QDRANT_PATH
+from src.ingestion import COLLECTION_NAME, get_qdrant_client
 from src.state import AgentState
 
 _vectorstore: QdrantVectorStore | None = None
@@ -17,14 +17,13 @@ def get_vectorstore() -> QdrantVectorStore:
     global _vectorstore
     if _vectorstore is None:
         embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-2-preview")
-        client = QdrantClient(path=QDRANT_PATH)
+        client = get_qdrant_client()
         _vectorstore = QdrantVectorStore(
             client=client,
             collection_name=COLLECTION_NAME,
             embedding=embeddings,
         )
     return _vectorstore
-
 
 def retriever_agent(state: AgentState) -> dict:
     """RAG agent: state['question']ga eng mos 4 ta bo'lakni topib, state'ga qo'shadi."""
