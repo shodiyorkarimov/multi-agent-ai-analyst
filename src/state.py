@@ -10,8 +10,8 @@ class AgentState(TypedDict):
     documents: List[str]           # retriever/web to'plagan matn parchalari
     sql_result: Optional[str]      # data(SQL) agent natijasi
     code_result: Optional[str]     # code agent natijasi
+    memory_context: List[str]      # F10: xotiradan topilgan tegishli oldingi suhbatlar
     answer: str                    # yakuniy javob
-    approved: bool                 # critic hozirgi javobni tasdiqladimi
     steps: List[str]               # qaysi agentlar ishga tushgani (trace uchun)
     revisions: int                 # critic necha marta qaytarganini sanaydi
 
@@ -24,8 +24,8 @@ def new_state(question: str) -> AgentState:
         documents=[],
         sql_result=None,
         code_result=None,
+        memory_context=[],
         answer="",
-        approved=False,
         steps=[],
         revisions=0,
     )
