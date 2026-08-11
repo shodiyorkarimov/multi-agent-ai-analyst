@@ -1,0 +1,42 @@
+[
+  {
+    "question": "How many employees work in Engineering?",
+    "ground_truth": "2 employees work in Engineering."
+  },
+  {
+    "question": "How many employees work in Marketing?",
+    "ground_truth": "1 employee works in Marketing."
+  },
+  {
+    "question": "What is the law of demand?",
+    "ground_truth": "The law of demand states that, all else equal, as the price of a good rises, the quantity demanded falls, and as the price falls, the quantity demanded rises."
+  },
+  {
+    "question": "What is price elasticity of demand?",
+    "ground_truth": "Price elasticity of demand measures how much the quantity demanded of a good responds to a change in its price, calculated as the percentage change in quantity demanded divided by the percentage change in price."
+  },
+  {
+    "question": "What is a market structure?",
+    "ground_truth": "Market structure refers to the characteristics of a market that affect the behavior of firms, such as the number of sellers, the type of product, and barriers to entry, including structures like perfect competition, monopoly, and oligopoly."
+  },
+  {
+    "question": "What determines consumer choice according to economic theory?",
+    "ground_truth": "Consumer choice is determined by consumer preferences and the budget constraint, with consumers choosing the combination of goods that maximizes their utility given their limited income."
+  },
+  {
+    "question": "What is 15 multiplied by 24?",
+    "ground_truth": "15 multiplied by 24 equals 360."
+  },
+  {
+    "question": "What is the square root of 144?",
+    "ground_truth": "The square root of 144 is 12."
+  },
+  {
+    "question": "What happens to price when supply increases but demand stays the same?",
+    "ground_truth": "When supply increases and demand stays the same, the equilibrium price falls and the equilibrium quantity rises."
+  },
+  {
+    "question": "What is opportunity cost?",
+    "ground_truth": "Opportunity cost is the value of the next best alternative that must be given up in order to pursue a certain action."
+  }
+]
