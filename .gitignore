@@ -6,3 +6,4 @@ __pycache__/
 .ipynb_checkpoints/
 data/docs/*.pdf
 data/docs/*.docx
+data/qdrant_storage/.lock
