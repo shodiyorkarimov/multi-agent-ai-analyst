@@ -11,6 +11,7 @@ from src.agents.retriever import retriever_agent
 from src.memory import add_turn, recall
 from src.state import AgentState
 from src.agents.web import web_agent
+from langfuse.langchain import CallbackHandler
 
 
 class Route(BaseModel):
@@ -169,19 +170,24 @@ if __name__ == "__main__":
     from src.state import new_state
 
     app = build_graph()
+    langfuse_handler = CallbackHandler()
 
-    print("--- 1-savol ---")
-    state1 = app.invoke(
-        new_state("How many employees work in Engineering?"),
-        config={"recursion_limit": 15},
-    )
-    print(f"Javob: {state1['answer']}")
-    print(f"steps: {state1['steps']}\n")
+    try:
+        print("--- 1-savol ---")
+        state1 = app.invoke(
+            new_state("How many employees work in Engineering?"),
+            config={"recursion_limit": 15, "callbacks": [langfuse_handler]},
+        )
+        print(f"Javob: {state1['answer']}")
+        print(f"steps: {state1['steps']}\n")
 
-    print("--- 2-savol (davomli, xotiraga tayanishi kerak) ---")
-    state2 = app.invoke(
-        new_state("And how many work in Marketing?"),
-        config={"recursion_limit": 15},
-    )
-    print(f"Javob: {state2['answer']}")
-    print(f"steps: {state2['steps']}")
+        print("--- 2-savol (davomli, xotiraga tayanishi kerak) ---")
+        state2 = app.invoke(
+            new_state("And how many work in Marketing?"),
+            config={"recursion_limit": 15, "callbacks": [langfuse_handler]},
+        )
+        print(f"Javob: {state2['answer']}")
+        print(f"steps: {state2['steps']}")
+    finally:
+        langfuse_handler.client.flush()
+        print("\n[Langfuse] barcha trace'lar yuborildi (flush qilindi).")
