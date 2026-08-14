@@ -24,6 +24,7 @@ load_dotenv(dotenv_path=ENV_PATH, override=True)
 
 class Settings(BaseModel):
     google_api_key: str = Field(default_factory=lambda: os.getenv("GOOGLE_API_KEY", ""))
+    gemini_api_key: str = Field(default_factory=lambda: os.getenv("GEMINI_API_KEY", ""))
     tavily_api_key: Optional[str] = Field(default_factory=lambda: os.getenv("TAVILY_API_KEY") or None)
     langfuse_public_key: Optional[str] = Field(default_factory=lambda: os.getenv("LANGFUSE_PUBLIC_KEY") or None)
     langfuse_secret_key: Optional[str] = Field(default_factory=lambda: os.getenv("LANGFUSE_SECRET_KEY") or None)

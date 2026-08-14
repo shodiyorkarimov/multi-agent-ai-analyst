@@ -1,8 +1,15 @@
 """
-Barcha agentlar ishlatadigan umumiy LLM (Gemini chat modeli).
+Barcha agentlar ishlatadigan umumiy LLM -- endi class proxy orqali (OpenAI-mos format).
 """
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 
 from src.config import settings  # noqa: F401  (import triggers load_dotenv)
 
-llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0)
+PROXY_BASE_URL = "https://saidazam-litellm-proxy.hf.space/v1"
+
+llm = ChatOpenAI(
+    base_url=PROXY_BASE_URL,
+    api_key=settings.gemini_api_key,
+    model="gemini-flash-lite",
+    temperature=0,
+)

@@ -7,7 +7,7 @@ from typing import List
 
 import docx2txt
 from langchain_core.documents import Document
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
@@ -32,7 +32,7 @@ def get_qdrant_client() -> QdrantClient:
 
 # Katta PDF fayllarda tezkor sinov qilish uchun: masalan 20 ga o'zgartiring
 # (faqat birinchi 20 sahifa o'qiladi). To'liq kitobni ishlatish uchun None qoldiring.
-MAX_PAGES_PER_PDF: int | None = 20
+MAX_PAGES_PER_PDF: int | None = 250
 
 
 def _load_pdf(path: Path) -> str:
@@ -80,7 +80,11 @@ def chunk_documents(documents: List[Document]) -> List[Document]:
 
 
 def build_vectorstore(chunks: List[Document]) -> QdrantVectorStore:
-    embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-2-preview")
+    embeddings = OpenAIEmbeddings(
+        base_url="https://saidazam-litellm-proxy.hf.space/v1",
+        api_key=settings.gemini_api_key,
+        model="gemini-embedding",
+    )
 
     # Birinchi bo'lak orqali bo'sh kolleksiya yaratamiz (vektor o'lchami shundan aniqlanadi)
     vectorstore = QdrantVectorStore.from_documents(

@@ -2,7 +2,7 @@
 F10 -- Long-term memory: o'tgan savol-javoblarni saqlaydi va tegishlilarini qidirib topadi.
 """
 from langchain_core.documents import Document
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client.models import Distance, VectorParams
 
@@ -18,7 +18,11 @@ def get_memory_store() -> QdrantVectorStore:
     """Xotira uchun alohida Qdrant kolleksiyasi (hujjatlar kolleksiyasidan mustaqil, lekin bitta umumiy client orqali)."""
     global _memory_store
     if _memory_store is None:
-        embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-2-preview")
+        embeddings = OpenAIEmbeddings(
+        base_url="https://saidazam-litellm-proxy.hf.space/v1",
+        api_key=settings.gemini_api_key,
+        model="gemini-embedding",
+    )
         client = get_qdrant_client()
 
         if not client.collection_exists(MEMORY_COLLECTION):
