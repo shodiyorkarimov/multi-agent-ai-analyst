@@ -32,7 +32,7 @@ def get_qdrant_client() -> QdrantClient:
 
 # Katta PDF fayllarda tezkor sinov qilish uchun: masalan 20 ga o'zgartiring
 # (faqat birinchi 20 sahifa o'qiladi). To'liq kitobni ishlatish uchun None qoldiring.
-MAX_PAGES_PER_PDF: int | None = 250
+MAX_PAGES_PER_PDF: int | None = 50
 
 
 def _load_pdf(path: Path) -> str:
