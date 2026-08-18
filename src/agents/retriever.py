@@ -30,11 +30,17 @@ def get_vectorstore() -> QdrantVectorStore:
     return _vectorstore
 
 def retriever_agent(state: AgentState) -> dict:
-    """RAG agent: state['question']ga eng mos 4 ta bo'lakni topib, state'ga qo'shadi."""
+    """RAG agent: state['question']ga eng mos 4 ta bo'lakni topib, state'ga qo'shadi.
+    Har bir bo'lak boshiga manba nomi qo'shiladi -- shu orqali frontend/critic
+    aynan qaysi hujjatdan foydalanilganini bilib oladi."""
     vectorstore = get_vectorstore()
     docs = vectorstore.as_retriever(search_kwargs={"k": 4}).invoke(state["question"])
+    tagged_chunks = [
+        f"[manba: {d.metadata.get('source', 'nomaʼlum')}] {d.page_content}"
+        for d in docs
+    ]
     return {
-        "documents": [d.page_content for d in docs],
+        "documents": tagged_chunks,
         "steps": state["steps"] + ["retriever"],
     }
 

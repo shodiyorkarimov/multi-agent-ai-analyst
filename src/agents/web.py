@@ -17,8 +17,12 @@ def web_agent(state: AgentState) -> dict:
     response = client.search(state["question"], max_results=4)
     hits = response.get("results", [])
 
+    tagged_hits = [
+        f"[manba: {h.get('url', 'internet')}] {h['content']}" for h in hits
+    ]
+
     return {
-        "documents": state["documents"] + [h["content"] for h in hits],
+        "documents": state["documents"] + tagged_hits,
         "steps": state["steps"] + ["web"],
     }
 

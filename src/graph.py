@@ -102,6 +102,7 @@ def critic(state: AgentState) -> dict:
     print(f"  [critic] ok={verdict.ok}, sabab: {verdict.reason}")
     return {
         "revisions": state["revisions"] + (0 if verdict.ok else 1),
+        "steps": state["steps"] + [f"critic (ok={verdict.ok})"],
     }
 
 

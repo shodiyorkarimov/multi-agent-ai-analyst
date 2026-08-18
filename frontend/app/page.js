@@ -14,12 +14,22 @@ const AGENT_LABELS = {
   "data(sql)": "SQL bazasidan ma'lumot olindi",
   code: "Kod ishga tushirildi",
   generate: "Javob yozilmoqda...",
-  critic: "Javob tekshirilmoqda...",
   save_memory: "Xotiraga saqlanmoqda...",
 };
 
 function stepLabel(step) {
+  if (step.startsWith("critic (ok=True)")) return "Critic: javob tasdiqlandi ✅";
+  if (step.startsWith("critic (ok=False)")) return "Critic: javob rad etildi, qayta yozilmoqda ♻️";
   return AGENT_LABELS[step] || step;
+}
+
+// "[manba: Principles of Economics.pdf] matn..." -> { source, text }
+function parseSource(doc) {
+  const match = doc.match(/^\[manba:\s*(.+?)\]\s*([\s\S]*)$/);
+  if (match) {
+    return { source: match[1], text: match[2] };
+  }
+  return { source: null, text: doc };
 }
 
 export default function Home() {
@@ -44,6 +54,7 @@ export default function Home() {
       question: userQuestion,
       steps: [],
       answer: null,
+      documents: [],
     };
     setMessages((prev) => [...prev, newMessage]);
 
@@ -78,6 +89,7 @@ export default function Home() {
               last.steps = event.steps;
             } else if (event.type === "answer") {
               last.answer = event.answer;
+              last.documents = event.documents || [];
             }
             return updated;
           });
@@ -133,6 +145,32 @@ export default function Home() {
               <div className="bg-white border rounded-2xl px-4 py-3 w-fit max-w-full shadow-sm">
                 {msg.answer}
               </div>
+            )}
+
+            {msg.documents && msg.documents.length > 0 && (
+              <details className="max-w-full">
+                <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+                  Manbalar ({msg.documents.length})
+                </summary>
+                <div className="mt-2 space-y-2">
+                  {msg.documents.map((doc, k) => {
+                    const { source, text } = parseSource(doc);
+                    return (
+                      <div
+                        key={k}
+                        className="bg-gray-100 border rounded-lg px-3 py-2 text-xs text-gray-600"
+                      >
+                        {source && (
+                          <div className="font-semibold text-gray-700 mb-1">
+                            📄 {source}
+                          </div>
+                        )}
+                        <div className="line-clamp-3">{text}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </details>
             )}
           </div>
         ))}

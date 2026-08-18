@@ -1,5 +1,6 @@
 """
 F13 -- FastAPI backend: LangGraph oqimini frontendga real vaqtda (SSE) uzatadi.
+F12 -- Har bir so'rov Langfuse orqali kuzatiladi (tracing).
 """
 import json
 
@@ -7,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+from langfuse.langchain import CallbackHandler
 
 from src.graph import build_graph
 from src.state import new_state
@@ -41,27 +43,43 @@ def ask(request: AskRequest):
         seen_steps = 0
         final_snapshot = state
 
-        for snapshot in graph.stream(state, config={"recursion_limit": 15}, stream_mode="values"):
-            final_snapshot = snapshot
-            steps = snapshot.get("steps", [])
-            if len(steps) > seen_steps:
-                seen_steps = len(steps)
-                yield sse_format(
-                    {
-                        "type": "step",
-                        "latest_step": steps[-1],
-                        "steps": steps,
-                    }
-                )
+        # F12: har bir so'rov uchun alohida Langfuse callback handler --
+        # shunda har bir savol o'zining trace'iga ega bo'ladi (aralashib ketmaydi).
+        langfuse_handler = CallbackHandler()
 
-        yield sse_format(
-            {
-                "type": "answer",
-                "answer": final_snapshot.get("answer", ""),
-                "documents": final_snapshot.get("documents", []),
-            }
-        )
-        yield sse_format({"type": "done"})
+        try:
+            for snapshot in graph.stream(
+                state,
+                config={
+                    "recursion_limit": 15,
+                    "callbacks": [langfuse_handler],
+                },
+                stream_mode="values",
+            ):
+                final_snapshot = snapshot
+                steps = snapshot.get("steps", [])
+                if len(steps) > seen_steps:
+                    seen_steps = len(steps)
+                    yield sse_format(
+                        {
+                            "type": "step",
+                            "latest_step": steps[-1],
+                            "steps": steps,
+                        }
+                    )
+
+            yield sse_format(
+                {
+                    "type": "answer",
+                    "answer": final_snapshot.get("answer", ""),
+                    "documents": final_snapshot.get("documents", []),
+                }
+            )
+            yield sse_format({"type": "done"})
+        finally:
+            # Trace darhol Langfuse serveriga yuborilishini ta'minlaydi
+            # (aks holda process tugaguncha navbatda kutib qolishi mumkin).
+            langfuse_handler.client.flush()
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
 
