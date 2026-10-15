@@ -1,15 +1,26 @@
 """
-Barcha agentlar ishlatadigan umumiy LLM -- endi class proxy orqali (OpenAI-mos format).
+Barcha agentlar ishlatadigan umumiy LLM va embedding -- to'g'ridan-to'g'ri Google AI Studio (Gemini) orqali.
+Kalit: GOOGLE_API_KEY (.env faylida)
 """
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 
-from src.config import settings  # noqa: F401  (import triggers load_dotenv)
+from src.config import settings
 
-PROXY_BASE_URL = "https://saidazam-litellm-proxy.hf.space/v1"
+# Model nomi eskirsa, faqat shu ikki qatorni almashtirasiz.
+CHAT_MODEL = "gemini-3.5-flash-lite"
+EMBEDDING_MODEL = "models/gemini-embedding-001"  # o'lchami 3072 (Qdrant'dagi bilan bir xil)
 
-llm = ChatOpenAI(
-    base_url=PROXY_BASE_URL,
-    api_key=settings.gemini_api_key,
-    model="gemini-flash-lite",
+llm = ChatGoogleGenerativeAI(
+    model=CHAT_MODEL,
+    google_api_key=settings.google_api_key,
     temperature=0,
+    max_retries=2,
+    timeout=60,
 )
+
+
+def get_embeddings() -> GoogleGenerativeAIEmbeddings:
+    return GoogleGenerativeAIEmbeddings(
+        model=EMBEDDING_MODEL,
+        google_api_key=settings.google_api_key,
+    )
