@@ -7,13 +7,13 @@ from typing import List
 
 import docx2txt
 from langchain_core.documents import Document
-from langchain_openai import OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
 
 from qdrant_client import QdrantClient
 
+from src.llm import get_embeddings
 from src.config import settings  # noqa: F401  (import triggers load_dotenv)
 
 DOCS_DIR = Path(__file__).resolve().parent.parent / "data" / "docs"
@@ -80,11 +80,7 @@ def chunk_documents(documents: List[Document]) -> List[Document]:
 
 
 def build_vectorstore(chunks: List[Document]) -> QdrantVectorStore:
-    embeddings = OpenAIEmbeddings(
-        base_url="https://saidazam-litellm-proxy.hf.space/v1",
-        api_key=settings.gemini_api_key,
-        model="gemini-embedding",
-    )
+    embeddings = get_embeddings()
 
     # Birinchi bo'lak orqali bo'sh kolleksiya yaratamiz (vektor o'lchami shundan aniqlanadi)
     vectorstore = QdrantVectorStore.from_documents(

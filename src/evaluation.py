@@ -12,11 +12,10 @@ from ragas import EvaluationDataset
 from ragas.embeddings import LangchainEmbeddingsWrapper
 from ragas.llms import LangchainLLMWrapper
 from ragas.metrics import context_precision, faithfulness
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from pydantic import BaseModel, Field
 
 from src.graph import build_graph
-from src.llm import llm
+from src.llm import llm, get_embeddings
 from src.state import new_state
 
 QUESTIONS_PATH = Path(__file__).resolve().parent.parent / "data" / "eval" / "questions.json"
@@ -94,7 +93,7 @@ def main() -> None:
 
     evaluator_llm = LangchainLLMWrapper(llm)
     evaluator_embeddings = LangchainEmbeddingsWrapper(
-        GoogleGenerativeAIEmbeddings(model="gemini-embedding-2-preview")
+        get_embeddings()
     )
 
     dataset = EvaluationDataset.from_list(rows)

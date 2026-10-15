@@ -1,10 +1,10 @@
 """
 F3 -- Retriever agent: savolga eng mos hujjat bo'laklarini Qdrant'dan topib beradi.
 """
-from langchain_openai import OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 
+from src.llm import get_embeddings
 from src.config import settings  # noqa: F401  (import triggers load_dotenv)
 from src.ingestion import COLLECTION_NAME, get_qdrant_client
 from src.state import AgentState
@@ -16,11 +16,7 @@ def get_vectorstore() -> QdrantVectorStore:
     """F2'da yaratilgan Qdrant kolleksiyasiga ulanadi (qayta ingestion qilmasdan)."""
     global _vectorstore
     if _vectorstore is None:
-        embeddings = OpenAIEmbeddings(
-        base_url="https://saidazam-litellm-proxy.hf.space/v1",
-        api_key=settings.gemini_api_key,
-        model="gemini-embedding",
-    )
+        embeddings = get_embeddings()
         client = get_qdrant_client()
         _vectorstore = QdrantVectorStore(
             client=client,
